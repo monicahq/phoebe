@@ -1,55 +1,84 @@
-pool:
-  vmImage: 'macOS-10.15'
+jobs:
+- job: build
+  pool:
+    vmImage: 'macOS-10.15'
 
-variables:
-  GRADLE_USER_HOME: $(Pipeline.Workspace)/.gradle
+  variables:
+    GRADLE_USER_HOME: $(Pipeline.Workspace)/.gradle
 
-steps:
-- task: Cache@2
-  inputs:
-    key: 'gradle-v1 | "$(Agent.OS)"'
-    restoreKeys: |
-      gradle-v1
-    path: $(GRADLE_USER_HOME)
-  displayName: Gradle build cache
+  steps:
+  - task: Cache@2
+    inputs:
+      key: 'gradle-v1 | "$(Agent.OS)"'
+      restoreKeys: |
+        gradle-v1
+      path: $(GRADLE_USER_HOME)
+    displayName: Gradle build cache
 
-- task: Gradle@2
-  inputs:
-    workingDirectory: ''
-    gradleWrapperFile: 'gradlew'
-    gradleOptions: '-Xmx3072m'
-    javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.8'
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: true
-    testResultsFiles: '**/TEST-*.xml'
-    tasks: '--build-cache clean assembleDebug test'
-  displayName: Build
+  - task: Gradle@2
+    inputs:
+      workingDirectory: ''
+      gradleWrapperFile: 'gradlew'
+      gradleOptions: '-Xmx3072m'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.8'
+      jdkArchitectureOption: 'x64'
+      publishJUnitResults: true
+      testResultsFiles: '**/TEST-*.xml'
+      tasks: '--build-cache clean assembleDebug test'
+    displayName: Build
 
-- task: AndroidSigning@2
-  inputs:
-    apkFiles: '**/*.apk'
-    jarsign: true
-    jarsignerKeystoreFile: '$(monica.SecureFile)'
-    jarsignerKeystorePassword: '$(monica.store)'
-    jarsignerKeystoreAlias: '$(monica.KeystoreAlias)'
-    jarsignerKeyPassword: '$(monica.key)'
-    zipalign: true
+  - task: AndroidSigning@2
+    inputs:
+      apkFiles: '**/*.apk'
+      jarsign: true
+      jarsignerKeystoreFile: '$(monica.SecureFile)'
+      jarsignerKeystorePassword: '$(monica.store)'
+      jarsignerKeystoreAlias: '$(monica.KeystoreAlias)'
+      jarsignerKeyPassword: '$(monica.key)'
+      zipalign: true
 
-# stop the Gradle daemon to ensure no files are left open (impacting the save cache operation later)
-- script: |
-    ./gradlew --stop
-  displayName: Gradle stop
+  # stop the Gradle daemon to ensure no files are left open (impacting the save cache operation later)
+  - script: |
+      ./gradlew --stop
+    displayName: Gradle stop
 
-- task: CopyFiles@2
-  inputs:
-    contents: '**/*.apk'
-    targetFolder: '$(build.artifactStagingDirectory)'
-  displayName: Copy .apk files to artifact staging directory
+  - task: CopyFiles@2
+    inputs:
+      contents: '**/*.apk'
+      targetFolder: '$(build.artifactStagingDirectory)'
+    displayName: Copy .apk files to artifact staging directory
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathToPublish: '$(build.artifactStagingDirectory)'
-    artifactName: 'drop'
-    artifactType: 'container'
-  displayName: Publish artifacts
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: '$(build.artifactStagingDirectory)'
+      artifactName: 'drop'
+      artifactType: 'container'
+    displayName: Publish artifacts
+
+- job: reporting
+  pool:
+    vmImage: 'macOS-latest'
+
+  variables:
+    SONAR_ORGANIZATION: 'monicahq'
+    SONAR_PROJECT_KEY: 'monicahq_phoebe'
+    SONAR_PROJECT_NAME: 'phoebe'
+
+  steps:
+    - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
+      displayName: 'Prepare analysis on SonarCloud'
+      inputs:
+        SonarCloud: Sonarcloud
+        organization: $(SONAR_ORGANIZATION)
+        scannerMode: CLI
+        configMode: manual
+        cliProjectKey: $(SONAR_PROJECT_KEY)
+        cliProjectName: $(SONAR_PROJECT_NAME)
+        cliProjectVersion: 0.0
+
+    - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
+      displayName: 'Run Code Analysis'
+
+    - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
+      displayName: 'Publish Quality Gate Result'
