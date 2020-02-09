@@ -1,0 +1,139 @@
+apply plugin: "com.android.application"
+apply plugin: "kotlin-android"
+apply plugin: "kotlin-android-extensions"
+apply plugin: "androidx.navigation.safeargs.kotlin"
+apply plugin: "kotlin-kapt"
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    viewBinding.enabled = true
+    dataBinding.enabled = true
+
+    defaultConfig {
+        applicationId "org.monicahq.phoebe"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary true
+        buildConfigField "String", "DATABASE_NAME", '"monica"'
+    }
+
+    signingConfigs {
+        debug {}
+        release {}
+    }
+
+    buildTypes {
+        debug {
+            def app_url
+            try {
+                app_url = APP_URL
+            } catch (e) {}
+            if (app_url == '' || app_url == null) {
+                app_url = '"https://app.monicahq.com"'
+            }
+            applicationIdSuffix ".debug"
+            debuggable true
+            buildConfigField "String", "APP_URL", app_url
+            testCoverageEnabled = true
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            buildConfigField "String", "APP_URL", '"https://app.monicahq.com"'
+        }
+    }
+
+    // Encapsulates options for running tests.
+    testOptions {
+        // Changes the directory where Gradle saves test reports. By default, Gradle saves test reports
+        // in the path_to_your_project/module_name/build/outputs/reports/ directory.
+        // '$rootDir' sets the path relative to the root directory of the current project.
+        reportDir "$rootDir/test-reports"
+        // Changes the directory where Gradle saves test results. By default, Gradle saves test results
+        // in the path_to_your_project/module_name/build/outputs/test-results/ directory.
+        // '$rootDir' sets the path relative to the root directory of the current project.
+        resultsDir "$rootDir/test-results"
+    }
+
+    compileOptions {
+        sourceCompatibility rootProject.ext.jvmTarget
+        targetCompatibility rootProject.ext.jvmTarget
+    }
+
+    kotlinOptions {
+        jvmTarget = rootProject.ext.jvmTarget.toString()
+    }
+
+    packagingOptions {
+        exclude 'META-INF/atomicfu.kotlin_module'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Room components
+    implementation "androidx.room:room-runtime:$rootProject.roomVersion"
+    implementation "androidx.room:room-ktx:$rootProject.roomVersion"
+    kapt "androidx.room:room-compiler:$rootProject.roomVersion"
+    androidTestImplementation "androidx.room:room-testing:$rootProject.roomVersion"
+
+    // Lifecycle components
+    implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.lifecycleVersion"
+    kapt "androidx.lifecycle:lifecycle-common-java8:$rootProject.archLifecycleVersion"
+    androidTestImplementation "androidx.arch.core:core-testing:$rootProject.coreTestingVersion"
+
+    // ViewModel Kotlin support
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.archLifecycleVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintLayoutVersion"
+
+    // Fragment
+    implementation "androidx.fragment:fragment-ktx:$rootProject.fragmentVersion"
+
+    // Coroutines
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$rootProject.coroutinesVersion"
+    //implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$rootProject.coroutinesVersion"
+    //implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.coroutinesVersion"
+
+    // UI
+    implementation "com.google.android.material:material:$rootProject.materialVersion"
+
+    // Annotation
+    implementation "androidx.annotation:annotation:$rootProject.annotationVersion"
+
+    // Navigation
+    implementation "androidx.navigation:navigation-runtime-ktx:$rootProject.navigationVersion"
+    implementation "androidx.navigation:navigation-fragment-ktx:$rootProject.navigationVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$rootProject.navigationVersion"
+
+    // RecyclerView
+    implementation "androidx.recyclerview:recyclerview:$rootProject.recyclerViewVersion"
+
+    // Retrofit
+    implementation "com.squareup.okhttp3:okhttp:$rootProject.okhttpVersion"
+    implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-moshi:$rootProject.retrofitVersion"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofitVersion"
+    implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofitGsonConverterVersion"
+
+    // Other
+    implementation "androidx.appcompat:appcompat:$rootProject.appCompatVersion"
+    implementation "androidx.core:core-ktx:$rootProject.ktxVersion"
+    implementation "androidx.legacy:legacy-support-v4:$rootProject.legacyVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$rootProject.kotlinVersion"
+
+    // Testing dependencies
+    testImplementation "junit:junit:$rootProject.junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$rootProject.testExtJunit"
+    androidTestImplementation "androidx.test:rules:$rootProject.testRules"
+    androidTestImplementation ("androidx.test.espresso:espresso-core:$rootProject.espressoVersion", {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+}

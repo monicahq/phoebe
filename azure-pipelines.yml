@@ -1,0 +1,55 @@
+pool:
+  vmImage: 'macOS-10.15'
+
+variables:
+  GRADLE_USER_HOME: $(Pipeline.Workspace)/.gradle
+
+steps:
+- task: Cache@2
+  inputs:
+    key: 'gradle-v1 | "$(Agent.OS)"'
+    restoreKeys: |
+      gradle-v1
+    path: $(GRADLE_USER_HOME)
+  displayName: Gradle build cache
+
+- task: Gradle@2
+  inputs:
+    workingDirectory: ''
+    gradleWrapperFile: 'gradlew'
+    gradleOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.8'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    testResultsFiles: '**/TEST-*.xml'
+    tasks: '--build-cache clean assembleDebug test'
+  displayName: Build
+
+- task: AndroidSigning@2
+  inputs:
+    apkFiles: '**/*.apk'
+    jarsign: true
+    jarsignerKeystoreFile: '$(monica.SecureFile)'
+    jarsignerKeystorePassword: '$(monica.store)'
+    jarsignerKeystoreAlias: '$(monica.KeystoreAlias)'
+    jarsignerKeyPassword: '$(monica.key)'
+    zipalign: true
+
+# stop the Gradle daemon to ensure no files are left open (impacting the save cache operation later)
+- script: |
+    ./gradlew --stop
+  displayName: Gradle stop
+
+- task: CopyFiles@2
+  inputs:
+    contents: '**/*.apk'
+    targetFolder: '$(build.artifactStagingDirectory)'
+  displayName: Copy .apk files to artifact staging directory
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(build.artifactStagingDirectory)'
+    artifactName: 'drop'
+    artifactType: 'container'
+  displayName: Publish artifacts
