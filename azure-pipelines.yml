@@ -43,6 +43,7 @@ jobs:
       options: '--build-cache'
       jdkVersionOption: '$(jdkVersionOption)'
       codeCoverageToolOption: '$(codeCoverageToolOption)'
+      codeCoverageClassFilter: '$(codeCoverageClassFilter)'
       publishJUnitResults: true
       sonarQubeRunAnalysis: true
       sqGradlePluginVersionChoice: build
