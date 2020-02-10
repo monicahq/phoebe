@@ -5,27 +5,49 @@ jobs:
 
   variables:
     GRADLE_USER_HOME: $(Pipeline.Workspace)/.gradle
+    SONAR_ORGANIZATION: 'monicahq'
+    SONAR_PROJECT_KEY: 'monicahq_phoebe'
+    SONAR_PROJECT_NAME: 'phoebe'
 
   steps:
   - task: Cache@2
+    displayName: Gradle build cache
     inputs:
       key: 'gradle-v1 | "$(Agent.OS)"'
       restoreKeys: |
         gradle-v1
       path: $(GRADLE_USER_HOME)
-    displayName: Gradle build cache
 
   - task: Gradle@2
+    displayName: 'gradlew clean'
+    inputs:
+      tasks: clean
+      publishJUnitResults: false
+      workingDirectory: ''
+      gradleWrapperFile: '$(gradleWrapperFile)'
+
+  - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
+    displayName: 'Prepare analysis on SonarCloud'
+    inputs:
+      SonarCloud: Sonarcloud
+      organization: $(SONAR_ORGANIZATION)
+      scannerMode: Other
+
+  - task: Gradle@2
+    displayName: 'gradlew build'
     inputs:
       workingDirectory: ''
-      gradleWrapperFile: 'gradlew'
+      gradleWrapperFile: '$(gradleWrapperFile)'
       gradleOptions: '-Xmx3072m'
-      javaHomeOption: 'JDKVersion'
-      jdkVersionOption: '1.8'
-      jdkArchitectureOption: 'x64'
+      jdkVersionOption: '$(jdkVersionOption)'
+      codeCoverageToolOption: '$(codeCoverageToolOption)'
       publishJUnitResults: true
-      testResultsFiles: '**/TEST-*.xml'
-      tasks: '--build-cache clean assembleDebug test'
+      sonarQubeRunAnalysis: true
+      checkStyleRunAnalysis: true
+      findBugsRunAnalysis: true
+      pmdRunAnalysis: true
+      options: '--build-cache'
+      tasks: 'build test'
     displayName: Build
 
   - task: AndroidSigning@2
@@ -38,16 +60,21 @@ jobs:
       jarsignerKeyPassword: '$(monica.key)'
       zipalign: true
 
+  - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
+    displayName: 'Publish Quality Gate Result'
+
   # stop the Gradle daemon to ensure no files are left open (impacting the save cache operation later)
   - script: |
       ./gradlew --stop
     displayName: Gradle stop
+    condition: succeededOrFailed()
 
   - task: CopyFiles@2
     inputs:
       contents: '**/*.apk'
       targetFolder: '$(build.artifactStagingDirectory)'
     displayName: Copy .apk files to artifact staging directory
+    condition: succeededOrFailed()
 
   - task: PublishBuildArtifacts@1
     inputs:
@@ -55,30 +82,4 @@ jobs:
       artifactName: 'drop'
       artifactType: 'container'
     displayName: Publish artifacts
-
-- job: reporting
-  pool:
-    vmImage: 'macOS-latest'
-
-  variables:
-    SONAR_ORGANIZATION: 'monicahq'
-    SONAR_PROJECT_KEY: 'monicahq_phoebe'
-    SONAR_PROJECT_NAME: 'phoebe'
-
-  steps:
-    - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
-      displayName: 'Prepare analysis on SonarCloud'
-      inputs:
-        SonarCloud: Sonarcloud
-        organization: $(SONAR_ORGANIZATION)
-        scannerMode: CLI
-        configMode: manual
-        cliProjectKey: $(SONAR_PROJECT_KEY)
-        cliProjectName: $(SONAR_PROJECT_NAME)
-        cliProjectVersion: 0.0
-
-    - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
-      displayName: 'Run Code Analysis'
-
-    - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
-      displayName: 'Publish Quality Gate Result'
+    condition: succeededOrFailed()
