@@ -42,11 +42,10 @@ jobs:
       gradleOptions: '-Xmx3072m'
       options: '--build-cache'
       jdkVersionOption: '$(jdkVersionOption)'
-      codeCoverageToolOption: '$(codeCoverageToolOption)'
-      codeCoverageClassFilter: '$(codeCoverageClassFilter)'
+      #codeCoverageToolOption: '$(codeCoverageToolOption)'
+      #codeCoverageClassFilter: '$(codeCoverageClassFilter)'
       publishJUnitResults: true
       sonarQubeRunAnalysis: true
-      sqGradlePluginVersionChoice: build
       checkStyleRunAnalysis: true
       pmdRunAnalysis: true
 
