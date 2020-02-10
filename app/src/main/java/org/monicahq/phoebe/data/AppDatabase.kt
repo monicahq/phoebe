@@ -5,13 +5,10 @@ import androidx.annotation.VisibleForTesting
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.monicahq.phoebe.BuildConfig
 import org.monicahq.phoebe.data.dao.ContactDao
 import org.monicahq.phoebe.data.model.Contact
-import java.util.concurrent.Executors
 
 interface RoomDatabaseFactory<T> {
     fun getInstance(context: Context, scope: CoroutineScope): T
@@ -42,7 +39,7 @@ abstract class AppDatabase : RoomDatabase() {
                             AppDatabase::class.java,
                             BuildConfig.DATABASE_NAME
                         )
-                            //.addCallback(ContactsDatabaseCallback(scope))
+                            // .addCallback(ContactsDatabaseCallback(scope))
                             .build()
                     }
                 }
@@ -62,7 +59,6 @@ abstract class AppDatabase : RoomDatabase() {
                 AppDatabase::class.java
             ).build()
         }
-
     }
 
 /*
@@ -93,5 +89,4 @@ abstract class AppDatabase : RoomDatabase() {
     }
 
  */
-
 }

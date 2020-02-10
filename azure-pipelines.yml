@@ -21,7 +21,15 @@ jobs:
   - task: Gradle@2
     displayName: 'gradlew clean'
     inputs:
-      tasks: clean
+      tasks: 'clean'
+      publishJUnitResults: false
+      workingDirectory: ''
+      gradleWrapperFile: '$(gradleWrapperFile)'
+
+  - task: Gradle@2
+    displayName: 'gradlew check'
+    inputs:
+      tasks: 'check'
       publishJUnitResults: false
       workingDirectory: ''
       gradleWrapperFile: '$(gradleWrapperFile)'
@@ -36,9 +44,11 @@ jobs:
   - task: Gradle@2
     displayName: 'gradlew build'
     inputs:
+      tasks: 'build'
       workingDirectory: ''
       gradleWrapperFile: '$(gradleWrapperFile)'
       gradleOptions: '-Xmx3072m'
+      options: '--build-cache'
       jdkVersionOption: '$(jdkVersionOption)'
       codeCoverageToolOption: '$(codeCoverageToolOption)'
       publishJUnitResults: true
@@ -46,8 +56,6 @@ jobs:
       checkStyleRunAnalysis: true
       findBugsRunAnalysis: true
       pmdRunAnalysis: true
-      options: '--build-cache'
-      tasks: 'build test'
 
   - task: AndroidSigning@2
     inputs:
@@ -61,11 +69,6 @@ jobs:
 
   - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
     displayName: 'Publish Quality Gate Result'
-
-  # stop the Gradle daemon to ensure no files are left open (impacting the save cache operation later)
-  - script: |
-      ./gradlew --stop
-    displayName: Gradle stop
     condition: succeededOrFailed()
 
   - task: CopyFiles@2
@@ -81,4 +84,14 @@ jobs:
       artifactName: 'drop'
       artifactType: 'container'
     displayName: Publish artifacts
+    condition: succeededOrFailed()
+
+  - publish: $(System.DefaultWorkingDirectory)/app/build/reports
+    artifact: 'reports'
+    condition: succeededOrFailed()
+
+  # stop the Gradle daemon to ensure no files are left open (impacting the save cache operation later)
+  - script: |
+      ./gradlew --stop
+    displayName: Gradle stop
     condition: succeededOrFailed()

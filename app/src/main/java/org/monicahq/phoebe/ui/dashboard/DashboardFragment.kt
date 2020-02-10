@@ -8,8 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import org.monicahq.phoebe.R
 import org.monicahq.phoebe.data.ContactsAdapter
 import org.monicahq.phoebe.databinding.DashboardFragmentBinding
 

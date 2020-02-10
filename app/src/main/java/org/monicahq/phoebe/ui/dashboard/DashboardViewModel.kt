@@ -38,5 +38,4 @@ class DashboardViewModel(application: Application, private val loginRepository: 
     fun insert(contact: Contact) = viewModelScope.launch {
         repository.insert(contact)
     }
-
 }

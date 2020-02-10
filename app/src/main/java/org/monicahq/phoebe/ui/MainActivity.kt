@@ -4,11 +4,8 @@ import android.accounts.AccountManager
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import org.monicahq.phoebe.R
 import org.monicahq.phoebe.auth.AccountAuthenticator
-import org.monicahq.phoebe.data.ContactsAdapter
 import org.monicahq.phoebe.data.LoginDataSource
 import org.monicahq.phoebe.data.LoginRepository
 
@@ -39,7 +36,7 @@ class MainActivity : LoginRepository.AccountListAdapterListener, FragmentActivit
                     // val name = result.getString(AccountManager.KEY_ACCOUNT_NAME)
 
                     setContentView(R.layout.main_activity)
-                    //redirect()
+                    // redirect()
                 }
             },
             null

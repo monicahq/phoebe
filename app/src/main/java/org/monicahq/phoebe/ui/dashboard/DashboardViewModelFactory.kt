@@ -1,7 +1,6 @@
 package org.monicahq.phoebe.ui.dashboard
 
 import android.app.Activity
-import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import org.monicahq.phoebe.data.LoginDataSource
