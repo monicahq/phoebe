@@ -53,8 +53,6 @@ plugins {
     id "com.diffplug.gradle.spotless" version "$spotlessPluginVersion"
     id "org.sonarqube" version "$sonarqubePluginVersion"
     id "jacoco"
-    id "checkstyle"
-    id "pmd"
 }
 
 allprojects {
