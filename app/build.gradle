@@ -48,6 +48,13 @@ android {
         }
     }
 
+    // Always show the result of every unit test, even if it passes.
+    testOptions.unitTests.all {
+        testLogging {
+            events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+        }
+    }
+
     compileOptions {
         sourceCompatibility rootProject.ext.jvmTarget
         targetCompatibility rootProject.ext.jvmTarget
@@ -94,6 +101,7 @@ dependencies {
 
     // Annotation
     implementation "androidx.annotation:annotation:$rootProject.annotationVersion"
+    androidTestImplementation "com.android.support:support-annotations:$rootProject.annotationSupportVersion"
 
     // Navigation
     implementation "androidx.navigation:navigation-runtime-ktx:$rootProject.navigationVersion"
@@ -119,9 +127,11 @@ dependencies {
 
     // Testing dependencies
     testImplementation "junit:junit:$rootProject.junitVersion"
+    androidTestImplementation "com.android.support.test:runner:$rootProject.testRunner"
     androidTestImplementation "androidx.test.ext:junit:$rootProject.testExtJunit"
     androidTestImplementation "androidx.test:rules:$rootProject.testRules"
     androidTestImplementation ("androidx.test.espresso:espresso-core:$rootProject.espressoVersion", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    androidTestImplementation "com.android.support.test.espresso:espresso-idling-resource:$rootProject.espressoVersion"
 }
