@@ -45,6 +45,7 @@ jobs:
       codeCoverageToolOption: '$(codeCoverageToolOption)'
       publishJUnitResults: true
       sonarQubeRunAnalysis: true
+      sqGradlePluginVersionChoice: build
       checkStyleRunAnalysis: true
       pmdRunAnalysis: true
 
