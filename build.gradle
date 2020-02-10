@@ -54,6 +54,7 @@ buildscript {
 plugins {
     id "com.diffplug.gradle.spotless" version "$spotlessPluginVersion"
     id "org.sonarqube" version "$sonarqubePluginVersion"
+    id 'java'
     id "jacoco"
 }
 
