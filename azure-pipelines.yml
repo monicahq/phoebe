@@ -48,7 +48,6 @@ jobs:
       pmdRunAnalysis: true
       options: '--build-cache'
       tasks: 'build test'
-    displayName: Build
 
   - task: AndroidSigning@2
     inputs:
