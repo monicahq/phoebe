@@ -15,7 +15,7 @@ interface RoomDatabaseFactory<T> {
     fun switchToInMemory(context: Context)
 }
 
-@Database(entities = [Contact::class], version = 1)
+@Database(entities = [Contact::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun contactDao(): ContactDao
 

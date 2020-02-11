@@ -53,7 +53,6 @@ buildscript {
 
 plugins {
     id "com.diffplug.gradle.spotless" version "$spotlessPluginVersion"
-    id "org.sonarqube" version "$sonarqubePluginVersion"
 }
 
 allprojects {
@@ -73,13 +72,5 @@ spotless {
     kotlin {
         target "**/*.kt"
         ktlint(ktlintVersion).userData(['max_line_length' : '250'])
-    }
-}
-
-sonarqube {
-    properties {
-        property "sonar.projectKey", "monicahq_phoebe"
-        property "sonar.projectName", "phoebe"
-        property "sonar.coverage.jacoco.xmlReportPaths", "app/build/reports/coverage/debug/report.xml"
     }
 }

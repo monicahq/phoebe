@@ -31,12 +31,22 @@ jobs:
     inputs:
       SonarCloud: Sonarcloud
       organization: $(SONAR_ORGANIZATION)
-      scannerMode: Other
+      scannerMode: CLI
+      configMode: manual
+      cliProjectKey: '$(SONAR_PROJECT_KEY)'
+      cliProjectName: '$(SONAR_PROJECT_NAME)'
+      extraProperties: |
+        sonar.coverage.jacoco.xmlReportPaths=app/build/reports/coverage/debug/report.xml
+        sonar.junit.reportPaths=app/build/test-results/testDebugUnitTest,app/build/outputs/androidTest-results/connected
+        sonar.links.homepage=https://monicahq.com
+        sonar.links.ci=https://dev.azure.com/monicahq/phoebe
+        sonar.links.scm=https://github.com/monicahq/phoebe
+        sonar.links.issue=https://github.com/monicahq/phoebe/issues
 
   - task: Gradle@2
     displayName: 'gradlew build'
     inputs:
-      tasks: 'assembleDebug'
+      tasks: 'assembleDebug test'
       workingDirectory: ''
       gradleWrapperFile: '$(gradleWrapperFile)'
       gradleOptions: '-Xmx1024m'
@@ -75,14 +85,8 @@ jobs:
       gradleOptions: '-Xmx2048m'
       jdkVersionOption: '$(jdkVersionOption)'
 
-  - task: Gradle@2
-    displayName: 'sonarqube'
-    inputs:
-      tasks: 'sonarqube'
-      workingDirectory: ''
-      gradleWrapperFile: '$(gradleWrapperFile)'
-      gradleOptions: '-Xmx2048m'
-      jdkVersionOption: '$(jdkVersionOption)'
+  - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
+    displayName: 'Run Code Analysis'
 
   - task: AndroidSigning@2
     inputs:
