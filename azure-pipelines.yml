@@ -46,7 +46,7 @@ jobs:
   - task: Gradle@2
     displayName: 'gradlew build'
     inputs:
-      tasks: 'assembleDebug test'
+      tasks: 'assembleDebug testDebugUnitTest'
       workingDirectory: ''
       gradleWrapperFile: '$(gradleWrapperFile)'
       gradleOptions: '-Xmx1024m'
@@ -84,9 +84,21 @@ jobs:
       gradleWrapperFile: '$(gradleWrapperFile)'
       gradleOptions: '-Xmx2048m'
       jdkVersionOption: '$(jdkVersionOption)'
+      publishJUnitResults: false
 
   - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
     displayName: 'Run Code Analysis'
+
+  - task: Gradle@2
+    displayName: 'gradlew release build'
+    inputs:
+      tasks: 'assembleRelease'
+      workingDirectory: ''
+      gradleWrapperFile: '$(gradleWrapperFile)'
+      gradleOptions: '-Xmx1024m'
+      options: '--build-cache'
+      jdkVersionOption: '$(jdkVersionOption)'
+      publishJUnitResults: false
 
   - task: AndroidSigning@2
     inputs:
