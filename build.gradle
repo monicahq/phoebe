@@ -33,7 +33,7 @@ buildscript {
         recyclerViewVersion = '1.1.0'
         retrofitVersion = '2.7.1'
         retrofitGsonConverterVersion = '2.7.1'
-        roomVersion = '2.2.3'
+        roomVersion = '2.2.4'
         sonarqubePluginVersion = '2.8'
         spotlessPluginVersion = '3.27.1'
         testExtJunit = '1.1.1'
