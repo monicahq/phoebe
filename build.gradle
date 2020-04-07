@@ -29,7 +29,7 @@ buildscript {
         ktxVersion = '1.2.0'
         materialVersion = '1.1.0'
         navigationVersion = '2.2.1'
-        okhttpVersion = '4.4.1'
+        okhttpVersion = '4.5.0'
         recyclerViewVersion = '1.1.0'
         retrofitVersion = '2.8.1'
         retrofitGsonConverterVersion = '2.8.1'
