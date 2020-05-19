@@ -31,7 +31,7 @@ buildscript {
         navigationVersion = '2.2.1'
         okhttpVersion = '4.7.0'
         recyclerViewVersion = '1.1.0'
-        retrofitVersion = '2.8.1'
+        retrofitVersion = '2.8.2'
         retrofitGsonConverterVersion = '2.8.2'
         roomVersion = '2.2.5'
         sonarqubePluginVersion = '2.8'
