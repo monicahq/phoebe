@@ -22,7 +22,7 @@ buildscript {
         legacyVersion = '1.0.0'
         lifecycleVersion = '2.2.0'
         gradleVersion = '4.0.0-alpha09'
-        gsonVersion = '2.8.6'
+        gsonVersion = '2.8.7'
         junitVersion = '4.13.2'
         kotlinVersion = '1.5.10'
         ktlintVersion = '0.33.0'
