@@ -26,7 +26,7 @@ buildscript {
         junitVersion = '4.13.2'
         kotlinVersion = '1.5.20'
         ktlintVersion = '0.33.0'
-        ktxVersion = '1.5.0'
+        ktxVersion = '1.6.0'
         materialVersion = '1.4.0'
         navigationVersion = '2.2.1'
         okhttpVersion = '4.9.1'
