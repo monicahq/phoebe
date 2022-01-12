@@ -28,7 +28,7 @@ buildscript {
         ktlintVersion = '0.33.0'
         ktxVersion = '1.6.0'
         materialVersion = '1.4.0'
-        navigationVersion = '2.2.1'
+        navigationVersion = '2.3.5'
         okhttpVersion = '4.9.1'
         recyclerViewVersion = '1.2.1'
         retrofitVersion = '2.9.0'
